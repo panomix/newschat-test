@@ -36,9 +36,9 @@
             box-shadow: 0 4px 20px rgba(0,0,0,0.1);
             line-height: 1.5;
             word-break: keep-all;
-            max-width: 100%; /* or set to a specific width like 600px */
+            max-width: 100%;
+            min-width: 300px; /* Ensure a minimum width to prevent shrinking */
         }
-
 
         .newschat-link {
             display: block;
@@ -46,8 +46,8 @@
             line-height: 1.4;
             word-wrap: break-word;
             white-space: normal;
-            color: white; /* Changed to white */
-            text-align: center; /* Center the text horizontally */
+            color: white;
+            text-align: center;
         }
 
         .newschat-link:hover {
@@ -165,17 +165,7 @@
             questions.forEach(q => {
                 let inserted = false;
 
-                if (typeof q.insert_after_paragraph === "number") {
-                    const idx = q.insert_after_paragraph;
-                    if (paragraphs[idx]) {
-                        const target = paragraphs[idx];
-                        const block = this.createQuestionBlock(q);
-                        target.parentNode.insertBefore(block, target.nextSibling);
-                        inserted = true;
-                    }
-                }
-
-                if (!inserted && typeof q.insert_after_text === "string") {
+                if (typeof q.insert_after_text === "string") {
                     for (const p of paragraphs) {
                         if (p.innerText.includes(q.insert_after_text)) {
                             const block = this.createQuestionBlock(q);
