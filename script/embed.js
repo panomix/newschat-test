@@ -187,6 +187,12 @@
             const div = document.createElement("div");
             div.className = CONFIG.CSS_CLASSES.container;
 
+            if (question.affiliate) {
+                const affiliateMessage = document.createElement("p");
+                affiliateMessage.textContent = '쿠팡 파트너스 활동의 일환으로 수수료를 일부 제공 받습니다';
+                div.appendChild(affiliateMessage);
+            }
+
             const link = document.createElement("a");
             link.href = question.url;
             link.className = CONFIG.CSS_CLASSES.link;
@@ -195,6 +201,14 @@
             link.rel = "noopener noreferrer";
 
             div.appendChild(link);
+
+            if (question.affiliate) {
+                const button = document.createElement("button");
+                button.textContent = '상품 보기';
+                button.onclick = () => window.open(question.url, '_blank');
+                div.appendChild(button);
+            }
+
             return div;
         }
 
