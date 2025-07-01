@@ -21,67 +21,179 @@
             container: 'newschat-question',
             link: 'newschat-link',
             loading: 'newschat-loading',
-            error: 'newschat-error'
+            error: 'newschat-error',
+            popup: 'newschat-popup',
+            popupOverlay: 'newschat-popup-overlay',
+            popupContent: 'newschat-popup-content',
+            popupClose: 'newschat-popup-close',
+            popupLink: 'newschat-popup-link'
         }
     };
-
     const STYLES = `
-        .newschat-question {
-            margin: 1.5rem 0;
-            padding: 1rem;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 12px;
-            color: white;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-            line-height: 1.5;
-            word-break: keep-all;
-            max-width: 100%;
-            min-width: 300px; /* Ensure a minimum width to prevent shrinking */
-        }
+    .newschat-question {
+        margin: 1.5rem 0;
+        display: block;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        line-height: 1.5;
+        word-break: keep-all;
+    }
 
-        .newschat-link {
-            display: block;
-            font-size: 1rem;
-            line-height: 1.4;
-            word-wrap: break-word;
-            white-space: normal;
-            color: white;
-            text-align: center;
-        }
+    .newschat-link {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.75rem 1rem;
+        border-radius: 12px;
+        text-decoration: none;
+        transition: background-color 0.2s ease;
+        background-color: transparent;
+        cursor: pointer;
+    }
 
-        .newschat-link:hover {
-            text-decoration: underline;
-        }
+    .newschat-link:hover {
+        background-color: rgba(0, 122, 255, 0.08);
+    }
 
-        .newschat-loading {
-            text-align: center;
-            padding: 2rem;
-            color: #666;
-        }
+    .newschat-arrow {
+        font-size: 1rem;
+        color: #007aff;
+        flex-shrink: 0;
+    }
 
-        .newschat-error {
-            padding: 1rem;
-            background: #fee;
-            color: #c33;
-            border-radius: 8px;
-            border: 1px solid #fcc;
-        }
+    .newschat-text {
+        font-size: 1rem;
+        color: #007aff;
+        white-space: normal;
+        flex-grow: 1;
+    }
 
-        .newschat-spinner {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 2px solid #ddd;
-            border-radius: 50%;
-            border-top-color: #667eea;
-            animation: spin 1s ease-in-out infinite;
-        }
+    .newschat-badge {
+        box-sizing: border-box;
+        width: 83px;
+        height: 35px;
+        border-radius: 20px;
+        font-family: 'Noto Sans KR', sans-serif;
+        font-style: normal;
+        font-weight: 700;
+        font-size: 14px;
+        line-height: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        background: linear-gradient(106.13deg, #0085FF -13.69%, #E978E9 131.77%);
+        color: white;
+        white-space: nowrap;
+    }
 
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-    `;
+    .newschat-error {
+        padding: 1rem;
+        background: #fee;
+        color: #c33;
+        border-radius: 8px;
+        border: 1px solid #fcc;
+    }
+
+    .newschat-popup-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 10000;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.3s ease, visibility 0.3s ease;
+    }
+
+    .newschat-popup-overlay.show {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    .newschat-popup-content {
+        background: white;
+        border-radius: 16px;
+        padding: 2rem;
+        max-width: 500px;
+        width: 90%;
+        max-height: 80vh;
+        overflow-y: auto;
+        position: relative;
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        transform: scale(0.9);
+        transition: transform 0.3s ease;
+    }
+
+    .newschat-popup-overlay.show .newschat-popup-content {
+        transform: scale(1);
+    }
+
+    .newschat-popup-close {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        cursor: pointer;
+        color: #666;
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        transition: background-color 0.2s ease;
+    }
+
+    .newschat-popup-close:hover {
+        background-color: #f0f0f0;
+    }
+
+    .newschat-popup-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        color: #333;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    .newschat-popup-description {
+        font-size: 1rem;
+        line-height: 1.6;
+        color: #666;
+        margin-bottom: 1.5rem;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    .newschat-popup-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.75rem 1.5rem;
+        background: linear-gradient(106.13deg, #0085FF -13.69%, #E978E9 131.77%);
+        color: white;
+        text-decoration: none;
+        border-radius: 12px;
+        font-weight: 600;
+        font-size: 1rem;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    .newschat-popup-link:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px rgba(0, 133, 255, 0.3);
+    }
+`;
+
+
+
 
     class NewsChatEmbed {
         constructor() {
@@ -107,6 +219,7 @@
             if (this.initialized) return;
             this.initialized = true;
             this.injectStyles();
+            this.createPopupContainer();
 
             this.loadQuestions();
         }
@@ -117,6 +230,88 @@
             style.id = 'newschat-styles';
             style.textContent = STYLES;
             document.head.appendChild(style);
+        }
+
+        createPopupContainer() {
+            if (document.getElementById('newschat-popup')) return;
+            
+            const popupOverlay = document.createElement('div');
+            popupOverlay.id = 'newschat-popup';
+            popupOverlay.className = CONFIG.CSS_CLASSES.popupOverlay;
+            
+            const popupContent = document.createElement('div');
+            popupContent.className = CONFIG.CSS_CLASSES.popupContent;
+            
+            const closeButton = document.createElement('button');
+            closeButton.className = CONFIG.CSS_CLASSES.popupClose;
+            closeButton.innerHTML = '×';
+            closeButton.addEventListener('click', () => this.hidePopup());
+            
+            const title = document.createElement('h3');
+            title.className = 'newschat-popup-title';
+            title.textContent = 'AI 답변 보기';
+            
+            const description = document.createElement('p');
+            description.className = 'newschat-popup-description';
+            description.textContent = '아래 링크를 클릭하여 AI 답변을 확인하세요.';
+            
+            const linkContainer = document.createElement('div');
+            linkContainer.id = 'newschat-popup-link-container';
+            
+            popupContent.appendChild(closeButton);
+            popupContent.appendChild(title);
+            popupContent.appendChild(description);
+            popupContent.appendChild(linkContainer);
+            popupOverlay.appendChild(popupContent);
+            
+            // Close popup when clicking overlay
+            popupOverlay.addEventListener('click', (e) => {
+                if (e.target === popupOverlay) {
+                    this.hidePopup();
+                }
+            });
+            
+            // Close popup with Escape key
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && this.isPopupVisible()) {
+                    this.hidePopup();
+                }
+            });
+            
+            document.body.appendChild(popupOverlay);
+        }
+
+        showPopup(question) {
+            const popup = document.getElementById('newschat-popup');
+            const linkContainer = document.getElementById('newschat-popup-link-container');
+            
+            // Clear previous content
+            linkContainer.innerHTML = '';
+            
+            // Create the actual link
+            const link = document.createElement('a');
+            link.href = question.url;
+            link.className = CONFIG.CSS_CLASSES.popupLink;
+            link.target = '_blank';
+            link.rel = 'noopener noreferrer';
+            link.textContent = question.text;
+            
+            linkContainer.appendChild(link);
+            
+            // Show popup
+            popup.classList.add('show');
+            document.body.style.overflow = 'hidden';
+        }
+
+        hidePopup() {
+            const popup = document.getElementById('newschat-popup');
+            popup.classList.remove('show');
+            document.body.style.overflow = '';
+        }
+
+        isPopupVisible() {
+            const popup = document.getElementById('newschat-popup');
+            return popup && popup.classList.contains('show');
         }
 
         async loadQuestions() {
@@ -160,57 +355,60 @@
         }
 
         insertQuestionsWithContext(questions) {
-            const paragraphs = Array.from(document.querySelectorAll("p"));
+            const paragraphsAndListItems = Array.from(document.querySelectorAll("p, li"));
 
             questions.forEach(q => {
                 let inserted = false;
 
-                if (typeof q.insert_after_text === "string") {
-                    for (const p of paragraphs) {
-                        if (p.innerText.includes(q.insert_after_text)) {
-                            const block = this.createQuestionBlock(q);
-                            p.parentNode.insertBefore(block, p.nextSibling);
-                            inserted = true;
-                            break;
-                        }
+                for (const element of paragraphsAndListItems) {
+                    console.log("Checking element:", element.textContent);
+                    if (q.insert_after_paragraph && element.textContent.includes(q.insert_after_paragraph)) {
+                        console.log("Found matching element for:", q.insert_after_paragraph);
+                        const block = this.createQuestionBlock(q);
+                        element.parentNode.insertBefore(block, element.nextSibling);
+                        inserted = true;
+                        break;
                     }
                 }
-
                 if (!inserted) {
-                    console.warn("NewsChat: Could not insert question dynamically, appending to body.");
-                    document.body.appendChild(this.createQuestionBlock(q));
+                    console.warn("No match for:", q.insert_after_paragraph);
                 }
+
             });
         }
 
         createQuestionBlock(question) {
             const div = document.createElement("div");
             div.className = CONFIG.CSS_CLASSES.container;
-
-            if (question.affiliate) {
-                const affiliateMessage = document.createElement("p");
-                affiliateMessage.textContent = '쿠팡 파트너스 활동의 일환으로 수수료를 일부 제공 받습니다';
-                div.appendChild(affiliateMessage);
-            }
-
+        
             const link = document.createElement("a");
-            link.href = question.url;
+            link.href = "#";
             link.className = CONFIG.CSS_CLASSES.link;
-            link.textContent = question.text;
-            link.target = "_blank";
-            link.rel = "noopener noreferrer";
-
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                this.showPopup(question);
+            });
+        
+            const arrow = document.createElement("span");
+            arrow.className = "newschat-arrow";
+            arrow.textContent = "↳";
+        
+            const textSpan = document.createElement("span");
+            textSpan.className = "newschat-text";
+            textSpan.textContent = question.text;
+        
+            const badge = document.createElement("span");
+            badge.className = "newschat-badge";
+            badge.textContent = "AI 답변보기";
+        
+            link.appendChild(arrow);
+            link.appendChild(textSpan);
+            link.appendChild(badge);
             div.appendChild(link);
-
-            if (question.affiliate) {
-                const button = document.createElement("button");
-                button.textContent = '상품 보기';
-                button.onclick = () => window.open(question.url, '_blank');
-                div.appendChild(button);
-            }
-
             return div;
         }
+        
+        
 
         createErrorElement() {
             const div = document.createElement('div');
