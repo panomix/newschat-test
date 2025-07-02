@@ -42,6 +42,7 @@
         display: flex;
         align-items: center;
         gap: 0.5rem;
+        padding: 8px 0;
         border-radius: 12px;
         text-decoration: none;
         transition: background-color 0.2s ease;
