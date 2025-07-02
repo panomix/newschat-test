@@ -31,11 +31,11 @@
     };
     const STYLES = `
     .newschat-question {
-        margin: 1.5rem 0;
         display: block;
         font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         line-height: 1.5;
         word-break: keep-all;
+        cursor: pointer;
     }
 
     .newschat-link {
