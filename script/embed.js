@@ -84,6 +84,7 @@
         background: linear-gradient(106.13deg, #0085FF -13.69%, #E978E9 131.77%);
         color: white;
         white-space: nowrap;
+        cursor: pointer;
     }
 
     .newschat-error {
