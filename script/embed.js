@@ -85,6 +85,7 @@
         color: white;
         white-space: nowrap;
         cursor: pointer;
+        flex-shrink: 0;
     }
 
     .newschat-error {
