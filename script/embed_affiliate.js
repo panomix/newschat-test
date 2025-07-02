@@ -296,7 +296,7 @@
 
             try {
                 console.log('NewsChat Affiliate: Fetching questions from API.');
-                const response = await fetch(`${CONFIG.API_BASE_URL}/generate_questions`, {
+                const response = await fetch(`${CONFIG.API_BASE_URL}/generate_affiliate`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ url: this.articleUrl })

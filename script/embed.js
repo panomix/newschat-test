@@ -291,38 +291,6 @@
             document.body.appendChild(popupOverlay);
         }
 
-        showPopup(question) {
-            const popup = document.getElementById('newschat-popup');
-            const linkContainer = document.getElementById('newschat-popup-link-container');
-            
-            // Clear previous content
-            linkContainer.innerHTML = '';
-            
-            // Create the actual link
-            const link = document.createElement('a');
-            link.href = question.url;
-            link.className = CONFIG.CSS_CLASSES.popupLink;
-            link.target = '_blank';
-            link.rel = 'noopener noreferrer';
-            link.textContent = question.text;
-            linkContainer.appendChild(link);
-            
-            // Show popup
-            popup.classList.add('show');
-            document.body.style.overflow = 'hidden';
-        }
-
-        hidePopup() {
-            const popup = document.getElementById('newschat-popup');
-            popup.classList.remove('show');
-            document.body.style.overflow = '';
-        }
-
-        isPopupVisible() {
-            const popup = document.getElementById('newschat-popup');
-            return popup && popup.classList.contains('show');
-        }
-
         async loadQuestions() {
             if (this.questionsLoaded) {
                 console.log('NewsChat: Questions already loaded.');
@@ -399,13 +367,10 @@
             div.className = CONFIG.CSS_CLASSES.container;
         
             const link = document.createElement("a");
-            link.href = "#";
+            link.href = question.url;
             link.className = CONFIG.CSS_CLASSES.link;
-
-            link.addEventListener('click', (e) => {
-                e.preventDefault();
-                this.showPopup(question);
-            });
+            link.target = '_blank';
+            link.rel = 'noopener noreferrer';
         
             const arrow = document.createElement("span");
             arrow.className = "newschat-arrow";
