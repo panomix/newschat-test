@@ -1,5 +1,5 @@
 /**
- * NewsChat Embed Script
+ * NewsChat Affiliate Embed Script
  */
 
 (function() {
@@ -18,10 +18,9 @@
             'body'
         ],
         CSS_CLASSES: {
-            container: 'newschat-question',
-            link: 'newschat-link',
-            loading: 'newschat-loading',
-            error: 'newschat-error',
+            container: 'newschat-affiliate-container',
+            highlightedText: 'newschat-highlighted-text',
+            magicWand: 'newschat-magic-wand',
             popup: 'newschat-popup',
             popupOverlay: 'newschat-popup-overlay',
             popupContent: 'newschat-popup-content',
@@ -29,69 +28,57 @@
             popupLink: 'newschat-popup-link'
         }
     };
+
     const STYLES = `
-    .newschat-question {
-        margin: 1.5rem 0;
-        display: block;
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-        line-height: 1.5;
-        word-break: keep-all;
-    }
-
-    .newschat-link {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        padding: 0.75rem 1rem;
-        border-radius: 12px;
-        text-decoration: none;
-        transition: background-color 0.2s ease;
-        background-color: transparent;
+    .newschat-affiliate-container {
+        position: relative;
+        display: inline-block;
+        margin: 0.5rem 0;
         cursor: pointer;
+        transition: transform 0.2s ease;
     }
 
-    .newschat-link:hover {
-        background-color: rgba(0, 122, 255, 0.08);
+    .newschat-affiliate-container:hover {
+        transform: scale(1.02);
     }
 
-    .newschat-arrow {
-        font-size: 1rem;
-        color: #007aff;
-        flex-shrink: 0;
+    .newschat-highlighted-text {
+        background: linear-gradient(120deg, #a8edea 0%, #fed6e3 100%);
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        border: 2px solid #e0e0e0;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        position: relative;
+        display: inline-block;
+        font-weight: 500;
+        color: #333;
+        transition: all 0.3s ease;
     }
 
-    .newschat-text {
-        font-size: 1rem;
-        color: #007aff;
-        white-space: normal;
-        flex-grow: 1;
+    .newschat-highlighted-text:hover {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        border-color: #007aff;
     }
 
-    .newschat-badge {
-        box-sizing: border-box;
-        width: 83px;
-        height: 35px;
-        border-radius: 20px;
-        font-family: 'Noto Sans KR', sans-serif;
-        font-style: normal;
-        font-weight: 700;
-        font-size: 14px;
-        line-height: 24px;
+    .newschat-magic-wand {
+        position: absolute;
+        top: -8px;
+        right: -8px;
+        font-size: 1.2rem;
+        background: white;
+        border-radius: 50%;
+        width: 24px;
+        height: 24px;
         display: flex;
         align-items: center;
         justify-content: center;
-        text-align: center;
-        background: linear-gradient(106.13deg, #0085FF -13.69%, #E978E9 131.77%);
-        color: white;
-        white-space: nowrap;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        animation: sparkle 2s ease-in-out infinite;
     }
 
-    .newschat-error {
-        padding: 1rem;
-        background: #fee;
-        color: #c33;
-        border-radius: 8px;
-        border: 1px solid #fcc;
+    @keyframes sparkle {
+        0%, 100% { transform: scale(1) rotate(0deg); }
+        50% { transform: scale(1.1) rotate(180deg); }
     }
 
     .newschat-popup-overlay {
@@ -177,50 +164,32 @@
         text-align: center;
     }
 
-    .newschat-popup-link {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-        padding: 0.75rem 1.5rem;
-        background: linear-gradient(106.13deg, #0085FF -13.69%, #E978E9 131.77%);
-        color: white;
-        text-decoration: none;
-        border-radius: 12px;
-        font-weight: 600;
-        font-size: 1rem;
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    .newschat-affiliate-disclaimer {
+        font-size: 0.875rem;
+        color: #888;
+        text-align: center;
+        margin-top: 1rem;
+        padding: 0.5rem;
+        background: #f8f9fa;
+        border-radius: 6px;
         font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    }
-
-    .newschat-popup-link:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 10px 20px rgba(0, 133, 255, 0.3);
-    }
-
-    .newschat-popup-iframe {
-        width: 100%;
-        max-width: 480px;
-        height: 300px;
-        border: none;
-        border-radius: 8px;
-        margin: 0 auto;
     }
 `;
 
-    class NewsChatEmbed {
+    class NewsChatAffiliateEmbed {
         constructor() {
             this.initialized = false;
             this.questionsLoaded = false;
             this.articleUrl = this.getArticleUrl();
             if (!this.articleUrl) {
-                console.warn('NewsChat: No article URL found');
+                console.warn('NewsChat Affiliate: No article URL found');
                 return;
             }
             this.init();
         }
 
         getArticleUrl() {
-            const script = document.currentScript || document.querySelector('script[src*="embed.js"]');
+            const script = document.currentScript || document.querySelector('script[src*="embed_affiliate.js"]');
             const rawUrl = script?.getAttribute('data-article-url') || window.location.href;
             return rawUrl;
         }
@@ -230,23 +199,22 @@
             this.initialized = true;
             this.injectStyles();
             this.createPopupContainer();
-
             this.loadQuestions();
         }
 
         injectStyles() {
-            if (document.getElementById('newschat-styles')) return;
+            if (document.getElementById('newschat-affiliate-styles')) return;
             const style = document.createElement('style');
-            style.id = 'newschat-styles';
+            style.id = 'newschat-affiliate-styles';
             style.textContent = STYLES;
             document.head.appendChild(style);
         }
 
         createPopupContainer() {
-            if (document.getElementById('newschat-popup')) return;
+            if (document.getElementById('newschat-affiliate-popup')) return;
             
             const popupOverlay = document.createElement('div');
-            popupOverlay.id = 'newschat-popup';
+            popupOverlay.id = 'newschat-affiliate-popup';
             popupOverlay.className = CONFIG.CSS_CLASSES.popupOverlay;
             
             const popupContent = document.createElement('div');
@@ -259,14 +227,14 @@
             
             const title = document.createElement('h3');
             title.className = 'newschat-popup-title';
-            title.textContent = 'AI 답변 보기';
+            title.textContent = '추천 콘텐츠';
             
             const description = document.createElement('p');
             description.className = 'newschat-popup-description';
-            description.textContent = '아래 링크를 클릭하여 AI 답변을 확인하세요.';
+            description.textContent = '아래의 콘텐츠를 확인하세요.';
             
             const linkContainer = document.createElement('div');
-            linkContainer.id = 'newschat-popup-link-container';
+            linkContainer.id = 'newschat-affiliate-popup-link-container';
             
             popupContent.appendChild(closeButton);
             popupContent.appendChild(title);
@@ -292,20 +260,19 @@
         }
 
         showPopup(question) {
-            const popup = document.getElementById('newschat-popup');
-            const linkContainer = document.getElementById('newschat-popup-link-container');
+            const popup = document.getElementById('newschat-affiliate-popup');
+            const linkContainer = document.getElementById('newschat-affiliate-popup-link-container');
             
             // Clear previous content
             linkContainer.innerHTML = '';
             
-            // Create the actual link
-            const link = document.createElement('a');
-            link.href = question.url;
-            link.className = CONFIG.CSS_CLASSES.popupLink;
-            link.target = '_blank';
-            link.rel = 'noopener noreferrer';
-            link.textContent = question.text;
-            linkContainer.appendChild(link);
+            // Display affiliate content
+            linkContainer.innerHTML = `<div style="display: flex; justify-content: center;">${question.url}</div>`;
+
+            const affiliateDisclaimer = document.createElement('p');
+            affiliateDisclaimer.className = 'newschat-affiliate-disclaimer';
+            affiliateDisclaimer.textContent = '쿠팡 파트너스 활동의 일환으로 수수료를 일부 제공 받습니다';
+            linkContainer.appendChild(affiliateDisclaimer);
             
             // Show popup
             popup.classList.add('show');
@@ -313,27 +280,27 @@
         }
 
         hidePopup() {
-            const popup = document.getElementById('newschat-popup');
+            const popup = document.getElementById('newschat-affiliate-popup');
             popup.classList.remove('show');
             document.body.style.overflow = '';
         }
 
         isPopupVisible() {
-            const popup = document.getElementById('newschat-popup');
+            const popup = document.getElementById('newschat-affiliate-popup');
             return popup && popup.classList.contains('show');
         }
 
         async loadQuestions() {
             if (this.questionsLoaded) {
-                console.log('NewsChat: Questions already loaded.');
+                console.log('NewsChat Affiliate: Questions already loaded.');
                 return;
             }
             this.questionsLoaded = true;
-            console.log('NewsChat: Starting to load questions.');
+            console.log('NewsChat Affiliate: Starting to load questions.');
             console.log(this.articleUrl);
 
             try {
-                console.log('NewsChat: Fetching questions from API.');
+                console.log('NewsChat Affiliate: Fetching questions from API.');
                 const response = await fetch(`${CONFIG.API_BASE_URL}/generate_questions`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -341,102 +308,92 @@
                 });
 
                 if (!response.ok) {
-                    console.error(`NewsChat: Failed to fetch questions. HTTP ${response.status}`);
+                    console.error(`NewsChat Affiliate: Failed to fetch questions. HTTP ${response.status}`);
                     throw new Error(`HTTP ${response.status}`);
                 }
 
                 const data = await response.json();
-                console.log('NewsChat: Questions fetched successfully.');
+                console.log('NewsChat Affiliate: Questions fetched successfully.');
 
                 if (Array.isArray(data.questions) && data.questions.length > 0) {
-                    // Filter out affiliate questions - only show regular questions
-                    const regularQuestions = data.questions.filter(q => !q.affiliate);
-                    console.log(`NewsChat: Found ${regularQuestions.length} regular questions.`);
+                    // Filter only affiliate questions
+                    const affiliateQuestions = data.questions.filter(q => q.affiliate);
+                    console.log(`NewsChat Affiliate: Found ${affiliateQuestions.length} affiliate questions.`);
                     
-                    if (regularQuestions.length > 0) {
-                        console.log(`NewsChat: Inserting ${regularQuestions.length} questions into the document.`);
-                        this.insertQuestionsWithContext(regularQuestions);
+                    if (affiliateQuestions.length > 0) {
+                        this.highlightAffiliateText(affiliateQuestions);
                     } else {
-                        console.log('NewsChat: No regular questions available to insert.');
+                        console.log('NewsChat Affiliate: No affiliate questions found.');
                     }
                 } else {
-                    console.log('NewsChat: No questions available to insert.');
+                    console.log('NewsChat Affiliate: No questions available.');
                 }
 
-            }
-            catch (error) {
-                console.error('NewsChat: Error loading questions:', error);
-                const errorElement = this.createErrorElement();
-                document.body.appendChild(errorElement);
+            } catch (error) {
+                console.error('NewsChat Affiliate: Error loading questions:', error);
             }
         }
 
-        insertQuestionsWithContext(questions) {
+        highlightAffiliateText(questions) {
             const paragraphsAndListItems = Array.from(document.querySelectorAll("p, li"));
 
             questions.forEach(q => {
-                let inserted = false;
+                if (!q.insert_after_paragraph) return;
 
                 for (const element of paragraphsAndListItems) {
-                    console.log("Checking element:", element.textContent);
-                    if (q.insert_after_paragraph && element.textContent.includes(q.insert_after_paragraph)) {
-                        console.log("Found matching element for:", q.insert_after_paragraph);
-                        const block = this.createQuestionBlock(q);
-                        element.parentNode.insertBefore(block, element.nextSibling);
-                        inserted = true;
+                    if (element.textContent.includes(q.insert_after_paragraph)) {
+                        console.log("NewsChat Affiliate: Highlighting text for:", q.insert_after_paragraph);
+                        this.createHighlightedText(element, q);
                         break;
                     }
                 }
-                if (!inserted) {
-                    console.warn("No match for:", q.insert_after_paragraph);
-                }
-
             });
         }
 
-        createQuestionBlock(question) {
-            const div = document.createElement("div");
-            div.className = CONFIG.CSS_CLASSES.container;
-        
-            const link = document.createElement("a");
-            link.href = "#";
-            link.className = CONFIG.CSS_CLASSES.link;
-
-            link.addEventListener('click', (e) => {
+        createHighlightedText(element, question) {
+            // Create container
+            const container = document.createElement('div');
+            container.className = CONFIG.CSS_CLASSES.container;
+            
+            // Create highlighted text span
+            const highlightedText = document.createElement('span');
+            highlightedText.className = CONFIG.CSS_CLASSES.highlightedText;
+            highlightedText.textContent = question.insert_after_paragraph;
+            
+            // Create magic wand emoji
+            const magicWand = document.createElement('span');
+            magicWand.className = CONFIG.CSS_CLASSES.magicWand;
+            magicWand.textContent = '✨';
+            
+            // Add click event
+            container.addEventListener('click', (e) => {
                 e.preventDefault();
                 this.showPopup(question);
             });
-        
-            const arrow = document.createElement("span");
-            arrow.className = "newschat-arrow";
-            arrow.textContent = "↳";
-        
-            const textSpan = document.createElement("span");
-            textSpan.className = "newschat-text";
-            textSpan.textContent = question.text;
-        
-            const badge = document.createElement("span");
-            badge.className = "newschat-badge";
-            badge.textContent = "AI 답변보기";
-        
-            link.appendChild(arrow);
-            link.appendChild(textSpan);
-            link.appendChild(badge);
-            div.appendChild(link);
-            return div;
-        }
-        
-        createErrorElement() {
-            const div = document.createElement('div');
-            div.className = CONFIG.CSS_CLASSES.error;
-            div.innerHTML = `<p>Unable to load questions at this time. Please try again later.</p>`;
-            return div;
+            
+            // Assemble the elements
+            container.appendChild(highlightedText);
+            container.appendChild(magicWand);
+            
+            // Replace the text in the original element
+            const originalText = element.textContent;
+            const newText = originalText.replace(
+                question.insert_after_paragraph,
+                container.outerHTML
+            );
+            
+            // Create a temporary container to parse the HTML
+            const temp = document.createElement('div');
+            temp.innerHTML = newText;
+            
+            // Replace the element's content
+            element.innerHTML = temp.innerHTML;
         }
     }
 
     if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', () => new NewsChatEmbed());
+        document.addEventListener('DOMContentLoaded', () => new NewsChatAffiliateEmbed());
     } else {
-        new NewsChatEmbed();
+        new NewsChatAffiliateEmbed();
     }
-})();
+})(); 
