@@ -106,8 +106,8 @@
         background: white;
         border-radius: 16px;
         padding: 2rem;
-        max-width: 500px;
-        width: 90%;
+        max-width: 350px;
+        width: 80%;
         max-height: 80vh;
         overflow-y: auto;
         position: relative;
@@ -227,18 +227,13 @@
             
             const title = document.createElement('h3');
             title.className = 'newschat-popup-title';
-            title.textContent = '추천 콘텐츠';
-            
-            const description = document.createElement('p');
-            description.className = 'newschat-popup-description';
-            description.textContent = '아래의 콘텐츠를 확인하세요.';
+            title.textContent = 'AI 추천 상품';
             
             const linkContainer = document.createElement('div');
             linkContainer.id = 'newschat-affiliate-popup-link-container';
             
             popupContent.appendChild(closeButton);
             popupContent.appendChild(title);
-            popupContent.appendChild(description);
             popupContent.appendChild(linkContainer);
             popupOverlay.appendChild(popupContent);
             
@@ -351,43 +346,69 @@
         }
 
         createHighlightedText(element, question) {
-            // Create container
-            const container = document.createElement('div');
-            container.className = CONFIG.CSS_CLASSES.container;
-            
-            // Create highlighted text span
-            const highlightedText = document.createElement('span');
-            highlightedText.className = CONFIG.CSS_CLASSES.highlightedText;
-            highlightedText.textContent = question.insert_after_paragraph;
-            
-            // Create magic wand emoji
-            const magicWand = document.createElement('span');
-            magicWand.className = CONFIG.CSS_CLASSES.magicWand;
-            magicWand.textContent = '✨';
-            
-            // Add click event
-            container.addEventListener('click', (e) => {
-                e.preventDefault();
-                this.showPopup(question);
-            });
-            
-            // Assemble the elements
-            container.appendChild(highlightedText);
-            container.appendChild(magicWand);
-            
-            // Replace the text in the original element
-            const originalText = element.textContent;
-            const newText = originalText.replace(
-                question.insert_after_paragraph,
-                container.outerHTML
+            // Find the exact text node that contains our target text
+            const walker = document.createTreeWalker(
+                element,
+                NodeFilter.SHOW_TEXT,
+                null,
+                false
             );
-            
-            // Create a temporary container to parse the HTML
-            const temp = document.createElement('div');
-            temp.innerHTML = newText;
-            
-            // Replace the element's content
-            element.innerHTML = temp.innerHTML;
+
+            let textNode;
+            while (textNode = walker.nextNode()) {
+                const text = textNode.textContent;
+                const targetText = question.insert_after_paragraph;
+                
+                if (text.includes(targetText)) {
+                    // Split the text node at the target text
+                    const beforeText = text.substring(0, text.indexOf(targetText));
+                    const afterText = text.substring(text.indexOf(targetText) + targetText.length);
+                    
+                    // Create text nodes for before and after
+                    const beforeNode = document.createTextNode(beforeText);
+                    const afterNode = document.createTextNode(afterText);
+                    
+                    // Create container for highlighted text
+                    const container = document.createElement('div');
+                    container.className = CONFIG.CSS_CLASSES.container;
+                    
+                    // Create highlighted text span
+                    const highlightedText = document.createElement('span');
+                    highlightedText.className = CONFIG.CSS_CLASSES.highlightedText;
+                    highlightedText.textContent = targetText;
+                    
+                    // Create magic wand emoji
+                    const magicWand = document.createElement('span');
+                    magicWand.className = CONFIG.CSS_CLASSES.magicWand;
+                    magicWand.textContent = '✨';
+                    
+                    // Add click event to container
+                    container.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        this.showPopup(question);
+                    });
+                    
+                    // Assemble the elements
+                    container.appendChild(highlightedText);
+                    container.appendChild(magicWand);
+                    
+                    // Replace the original text node with our new structure
+                    const parent = textNode.parentNode;
+                    const fragment = document.createDocumentFragment();
+                    
+                    if (beforeText) {
+                        fragment.appendChild(beforeNode);
+                    }
+                    fragment.appendChild(container);
+                    if (afterText) {
+                        fragment.appendChild(afterNode);
+                    }
+                    
+                    parent.replaceChild(fragment, textNode);
+                    break;
+                }
+            }
         }
     }
 
